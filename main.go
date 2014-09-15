@@ -27,7 +27,7 @@
 package exif
 
 /*
-#cgo LDFLAGS: -lexif
+#cgo LDFLAGS: -lexif -lm
 
 #include <stdlib.h>
 #include <libexif/exif-data.h>

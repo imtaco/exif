@@ -60,7 +60,7 @@ func TestGetLongitude(t *testing.T) {
 		t.Fatalf("Error: %s", err.Error())
 	}
 	
-	longitude, ok := exif.Tags["Longitude"]
+	longitude, ok := exif.Tags["GPSLongitude"]
 	if !ok {
 		t.Fatalf("Error: Tag \"Longitude\" could not be found")
 	}
@@ -78,7 +78,7 @@ func TestGetLatitude(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error: %s", err.Error())
 	}
-	latitude, ok := exif.Tags["Latitude"]
+	latitude, ok := exif.Tags["GPSLatitude"]
 	if !ok {
 		t.Fatalf("Error: Tag \"Latitude\" could not be found")
 	}

@@ -76,7 +76,7 @@ func (self *Data) Open(file string) error {
 	C.free(unsafe.Pointer(cfile))
 
 	if exifData == nil {
-		return fmt.Errorf(ErrNoExifData.Error(), file)
+		return ErrNoExifData
 	}
 
 	defer func() {
@@ -126,7 +126,7 @@ func (self *Data) Parse() error {
 
 	exifData := C.exif_loader_get_data(self.exifLoader)
 	if exifData == nil {
-		return fmt.Errorf(ErrNoExifData.Error(), "")
+		return ErrNoExifData
 	}
 
 	defer func() {

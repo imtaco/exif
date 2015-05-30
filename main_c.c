@@ -49,8 +49,12 @@ void import_entry(ExifEntry* entry, void* user_data) {
 
   strncpy(value->name, exif_tag_get_name_in_ifd(entry->tag, ifd), EXIF_VALUE_MAXLEN);
   if (0x927c == entry->tag) {
-	memset (value->value, 0, EXIF_VALUE_MAXLEN);
-	value->length = EXIF_VALUE_MAXLEN > entry->size ? entry->size : EXIF_VALUE_MAXLEN;
+    // length of maker note may exceed EXIF_VALUE_MAXLEN
+    if (entry->size > EXIF_VALUE_MAXLEN) {
+	  value->value = (char *)realloc(value->value, sizeof(char)*entry->size);
+    }
+    memset (value->value, 0, entry->size);
+    value->length = entry->size;
     memcpy (value->value, entry->data, value->length);
   } else {
     strncpy(value->value, exif_entry_get_value(entry, exif_text, EXIF_VALUE_MAXLEN), EXIF_VALUE_MAXLEN);

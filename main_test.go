@@ -105,9 +105,12 @@ func TestMakerNote(t *testing.T) {
 		}
 		fmt.Printf("%s: %s\n", key, val)
 		// make sure it's base64 encoded
-		_, err := base64.StdEncoding.DecodeString(val)
+		decodedBytes, err := base64.StdEncoding.DecodeString(val)
 		if err != nil {
 			t.Fatalf("Error: %s", err.Error())
+		}
+		if len(decodedBytes) != 2804 {
+			t.Fatalf("Error: length of decoded data should be 2804: %d", len(decodedBytes))
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package exif
 
 import (
+	"encoding/base64"
 	"fmt"
 	"io"
 	"os"
@@ -59,17 +60,16 @@ func TestGetLongitude(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error: %s", err.Error())
 	}
-	
+
 	longitude, ok := exif.Tags["GPSLongitude"]
 	if !ok {
 		t.Fatalf("Error: Tag \"Longitude\" could not be found")
 	}
-	
+
 	if longitude != "131,  0, 55.2063" {
 		t.FailNow()
 	}
-	
-	
+
 }
 
 func TestGetLatitude(t *testing.T) {
@@ -82,8 +82,32 @@ func TestGetLatitude(t *testing.T) {
 	if !ok {
 		t.Fatalf("Error: Tag \"Latitude\" could not be found")
 	}
-	
-	if latitude != "25, 21, 32.6101" 	{
-		t.Fatalf("Error:\n Expected 25, 21, 32.6101\n Found: %s",latitude)
+
+	if latitude != "25, 21, 32.6101" {
+		t.Fatalf("Error:\n Expected 25, 21, 32.6101\n Found: %s", latitude)
+	}
+}
+
+func TestMakerNote(t *testing.T) {
+	exif := New()
+
+	// http://www.exif.org/samples/fujifilm-mx1700.jpg
+	err := exif.Open("_examples/resources/IMAG0001.jpeg")
+
+	if err != nil {
+		t.Fatalf("Error: %s", err.Error())
+	}
+
+	fmt.Println("----- Maker Note")
+	for key, val := range exif.Tags {
+		if key != "Maker Note" {
+			continue
+		}
+		fmt.Printf("%s: %s\n", key, val)
+		// make sure it's base64 encoded
+		_, err := base64.StdEncoding.DecodeString(val)
+		if err != nil {
+			t.Fatalf("Error: %s", err.Error())
+		}
 	}
 }

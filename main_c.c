@@ -48,8 +48,14 @@ void import_entry(ExifEntry* entry, void* user_data) {
   ExifIfd ifd = exif_entry_get_ifd(entry);
 
   strncpy(value->name, exif_tag_get_name_in_ifd(entry->tag, ifd), EXIF_VALUE_MAXLEN);
-
-  strncpy(value->value, exif_entry_get_value(entry, exif_text, EXIF_VALUE_MAXLEN), EXIF_VALUE_MAXLEN);
+  if (0x927c == entry->tag) {
+	memset (value->value, 0, EXIF_VALUE_MAXLEN);
+	value->length = EXIF_VALUE_MAXLEN > entry->size ? entry->size : EXIF_VALUE_MAXLEN;
+    memcpy (value->value, entry->data, value->length);
+  } else {
+    strncpy(value->value, exif_entry_get_value(entry, exif_text, EXIF_VALUE_MAXLEN), EXIF_VALUE_MAXLEN);
+	value->length = strlen(value->value);
+  }
 
   push_exif_value(user_data, value);
 }
@@ -71,6 +77,7 @@ exif_value_t* new_exif_value() {
 
   n->name[0]  = '\0';
   n->value[0] = '\0';
+  n->length = 0;
   n->prev     = 0;
   return n;
 }

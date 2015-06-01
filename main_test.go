@@ -99,12 +99,14 @@ func TestMakerNote(t *testing.T) {
 	}
 
 	fmt.Println("----- Maker Note")
+	hasMakerNote := false
 	for key, val := range exif.Tags {
-		if key != "Maker Note" {
+		if key != "MakerNote" {
 			continue
 		}
-		fmt.Printf("%s: %s\n", key, val)
+		hasMakerNote = true
 		// make sure it's base64 encoded
+		// fmt.Printf("%s: %s\n", key, val)
 		decodedBytes, err := base64.StdEncoding.DecodeString(val)
 		if err != nil {
 			t.Fatalf("Error: %s", err.Error())
@@ -112,5 +114,8 @@ func TestMakerNote(t *testing.T) {
 		if len(decodedBytes) != 2804 {
 			t.Fatalf("Error: length of decoded data should be 2804: %d", len(decodedBytes))
 		}
+	}
+	if !hasMakerNote {
+		t.Fatal("should have maker note")
 	}
 }

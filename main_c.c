@@ -60,6 +60,7 @@ void import_entry(ExifEntry* entry, void* user_data) {
     strncpy(value->value, exif_entry_get_value(entry, exif_text, EXIF_VALUE_MAXLEN), EXIF_VALUE_MAXLEN);
 	value->length = strlen(value->value);
   }
+  value->tag = entry->tag;
 
   push_exif_value(user_data, value);
 }
@@ -82,6 +83,7 @@ exif_value_t* new_exif_value() {
   n->name[0]  = '\0';
   n->value[0] = '\0';
   n->length = 0;
+  n->tag = 0x0000;
   n->prev     = 0;
   return n;
 }

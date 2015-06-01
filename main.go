@@ -95,7 +95,7 @@ func (self *Data) parseExifData(exifData *C.ExifData) error {
 			break
 		} else {
 			tag := strings.Trim(C.GoString((*value).name), " ")
-			if tag == "Maker Note" { // for makernote, we just store hex value
+			if 0x927c == (*value).tag { // for makernote, we just store hex value
 				self.Tags[tag] = base64.StdEncoding.EncodeToString(
 					C.GoBytes(unsafe.Pointer((*value).value), (*value).length))
 			} else {

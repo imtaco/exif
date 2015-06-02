@@ -42,6 +42,7 @@ exif_stack_t* exif_dump(ExifData *);
 import "C"
 
 import (
+	"encoding/base64"
 	"errors"
 	"runtime"
 	"strings"
@@ -93,7 +94,13 @@ func (self *Data) parseExifData(exifData *C.ExifData) error {
 		if value == nil {
 			break
 		} else {
-			self.Tags[strings.Trim(C.GoString((*value).name), " ")] = strings.Trim(C.GoString((*value).value), " ")
+			tag := strings.Trim(C.GoString((*value).name), " ")
+			if 0x927c == (*value).tag { // for makernote, we just store b64encoded value
+				self.Tags[tag] = base64.StdEncoding.EncodeToString(
+					C.GoBytes(unsafe.Pointer((*value).value), (*value).length))
+			} else {
+				self.Tags[tag] = strings.Trim(C.GoString((*value).value), " ")
+			}
 		}
 		C.free_exif_value(value)
 	}

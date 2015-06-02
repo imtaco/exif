@@ -30,6 +30,7 @@
 #include "_cgo/types.h"
 
 #define EXIF_VALUE_MAXLEN 256
+#define EXIF_MAKERNOTE_MAXLEN 4096
 
 void import_entry(ExifEntry*, void*);
 void import_ifds(ExifContent*, void*);
@@ -48,8 +49,20 @@ void import_entry(ExifEntry* entry, void* user_data) {
   ExifIfd ifd = exif_entry_get_ifd(entry);
 
   strncpy(value->name, exif_tag_get_name_in_ifd(entry->tag, ifd), EXIF_VALUE_MAXLEN);
-
-  strncpy(value->value, exif_entry_get_value(entry, exif_text, EXIF_VALUE_MAXLEN), EXIF_VALUE_MAXLEN);
+  if (0x927c == entry->tag) {
+    // length of maker note may exceed EXIF_VALUE_MAXLEN
+    value->length = entry->size;
+    if (entry->size > EXIF_VALUE_MAXLEN) {
+      value->length = EXIF_MAKERNOTE_MAXLEN < entry->size ? EXIF_MAKERNOTE_MAXLEN : entry->size;
+      value->value = (char *)realloc(value->value, sizeof(char)*value->length);
+    }
+    memset (value->value, 0, value->length);
+    memcpy (value->value, entry->data, value->length);
+  } else {
+    strncpy(value->value, exif_entry_get_value(entry, exif_text, EXIF_VALUE_MAXLEN), EXIF_VALUE_MAXLEN);
+	value->length = strlen(value->value);
+  }
+  value->tag = entry->tag;
 
   push_exif_value(user_data, value);
 }
@@ -71,6 +84,8 @@ exif_value_t* new_exif_value() {
 
   n->name[0]  = '\0';
   n->value[0] = '\0';
+  n->length = 0;
+  n->tag = 0x0000;
   n->prev     = 0;
   return n;
 }

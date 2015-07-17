@@ -49,7 +49,7 @@ void import_entry(ExifEntry* entry, void* user_data) {
   ExifIfd ifd = exif_entry_get_ifd(entry);
 
   strncpy(value->name, exif_tag_get_name_in_ifd(entry->tag, ifd), EXIF_VALUE_MAXLEN);
-  if (0x927c == entry->tag) {
+  if (0x927c == entry->tag || 0x9286 == entry->tag) { // MakerNote, UserComment
     // length of maker note may exceed EXIF_VALUE_MAXLEN
     value->length = entry->size;
     if (entry->size > EXIF_VALUE_MAXLEN) {
